@@ -1,12 +1,14 @@
 import React from "react";
 import Input from "./Input";
 import Button from "./Button";
+import Alert from "./Alert.jsx";
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function displaySignIn(root) {
-  const [bet, setBet] = useState("");
-  const [bets, setBets] = useState([]);
+  const navigator = useNavigate();
+  const [alert, setAlert] = useState(null);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -14,6 +16,7 @@ export default function displaySignIn(root) {
   const handleLogin = async () => {
     if (!username || !password) {
       console.error("Email or password is missing!");
+      setAlert({ type: "error", message: "Email or password is missing!" });
       return;
     }
 
@@ -33,7 +36,14 @@ export default function displaySignIn(root) {
       const res = await response.json();
 
       if (res.success) {
-        console.log(res.data);
+        console.log(res);
+        localStorage.setItem("account_id", res.data.account_id);
+        localStorage.setItem("token", res.data.token);
+
+        navigator("/home");
+      } else {
+        console.error(res.message);
+        setAlert({ type: "error", message: "Incorrect Username or Password" });
       }
     } catch (err) {
       console.log(err);
@@ -49,8 +59,8 @@ export default function displaySignIn(root) {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white shadow-lg rounded-lg p-6 w-96">
+    <div className=" flex justify-center items-center min-h-screen w-full bg-gray-100">
+      <div className="bg-black shadow-lg rounded-lg p-6 w-96 h-96">
         <h2 className="text-2xl font-semibold text-center mb-4">
           Login to your Account!
         </h2>
@@ -118,6 +128,14 @@ export default function displaySignIn(root) {
           </p>
         </div>
       </div>
+
+      {alert && (
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          onClose={() => setAlert(null)}
+        />
+      )}
     </div>
   );
 }
