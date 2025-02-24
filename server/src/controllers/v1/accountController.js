@@ -60,7 +60,9 @@ class AccountController {
 
       res.json({
         success: true,
+        message: "Sucessfully login to your account 🎉",
         data: {
+          user_id: result.user_id,
           token: jwt.sign({ username: username }, process.env.API_SECRET_KEY, {
             expiresIn: "1d",
           }),
@@ -94,6 +96,7 @@ class AccountController {
         data: {
           username: res.locals.username,
           fullname: userInfo?.fullname,
+          balance: userInfo?.balance,
         },
       });
       res.end();

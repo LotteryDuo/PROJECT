@@ -19,6 +19,7 @@ class User {
    */
   async create(username, email, password) {
     try {
+      if ((!username, !email, !password)) return null;
       const [results] = await connection.execute(
         "INSERT INTO users(username, email, PASSWORD) VALUES (?, ?, ?)",
         [username, email, encryptPassword(password)]
@@ -64,7 +65,7 @@ class User {
   async get(username) {
     try {
       const [results] = await connection.execute(
-        "SELECT fullname FROM users WHERE username = ?",
+        "SELECT username, fullname, balance FROM users WHERE username = ?",
         [username]
       );
 
