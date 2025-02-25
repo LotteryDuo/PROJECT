@@ -37,8 +37,8 @@ export default function displaySignIn(root) {
 
       if (res.success) {
         console.log(res);
-        localStorage.setItem("account_id", res.data.account_id);
-        localStorage.setItem("token", res.data.token);
+        sessionStorage.setItem("username", res.data.username);
+        sessionStorage.setItem("token", res.data.token);
 
         navigator("/home");
       } else {

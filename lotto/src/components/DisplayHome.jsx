@@ -1,14 +1,46 @@
 import React, { useState, useEffect } from "react";
-import { Wallet, User, Star } from "lucide-react";
+import { Wallet, User, Star, CodeSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const getToken = () => {
-  return localStorage.getItem("token"); // Ensure this actually stores the token after login
-};
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3000");
+
+const getToken = () => sessionStorage.getItem("token");
+
+const getUsername = () => sessionStorage.getItem("username");
 
 const DisplayHome = () => {
+  const navigator = useNavigate();
+
   const [accountData, setAccountData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const username = getUsername(); // Get the username from localStorage
+
+    if (username) {
+      socket.emit("userConnected", { username: username });
+    } else {
+      console.log("⚠️ No username found in localStorage!");
+    }
+
+    const handleUsersUpdate = (onlineUsers) => {
+      setUsers(onlineUsers);
+    };
+
+    console.log(users);
+
+    // Listen for the updateOnlineUsers event from the server
+    socket.on("updateOnlineUsers", handleUsersUpdate);
+
+    return () => {
+      socket.off("updateOnlineUsers", handleUsersUpdate); // Cleanup on unmount
+    };
+  }, []);
 
   useEffect(() => {
     const fetchAccountData = async () => {
@@ -25,12 +57,12 @@ const DisplayHome = () => {
         const res = await response.json();
 
         if (res.success) {
-          setAccountData(res.data);
+          return setAccountData(res.data);
         } else {
           throw new Error(res.message || "Failed to fetch account data");
         }
       } catch (err) {
-        setError(err.message);
+        return setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -44,11 +76,11 @@ const DisplayHome = () => {
 
     // Example: Navigate to a page based on the card
     if (title === "Balance") {
-      window.location.href = "/balance";
+      navigator("/balance");
     } else if (title === "Account") {
-      window.location.href = "/account";
+      navigator("/account");
     } else if (title === "Bet 6/49") {
-      window.location.href = "/bet";
+      navigator("/bet");
     }
   };
 
@@ -75,6 +107,23 @@ const DisplayHome = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+      <div className="bg-white shadow-md rounded-lg p-4 w-64 mb-6">
+        <h2 className="text-lg font-semibold text-gray-700 border-b pb-2">
+          Online Users
+        </h2>
+        <ul className="mt-2 text-sm text-gray-600">
+          {users.length > 0 ? (
+            users.map((user, index) => (
+              <li key={index} className="py-1">
+                {user.username} is online
+              </li>
+            ))
+          ) : (
+            <li className="text-gray-400">No users online</li>
+          )}
+        </ul>
+      </div>
+
       <h1 className="text-gray-800 text-4xl font-bold mb-10 border-b-2 border-blue-500 pb-5">
         Dashboard
       </h1>
