@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../../models/user.js";
 
-class AccountController {
+class BetControlller {
   constructor(io) {
     this.user = new User();
     this.io = io;
@@ -195,4 +195,4 @@ class AccountController {
   }
 }
 
-export default AccountController;
+export default BetControlller;

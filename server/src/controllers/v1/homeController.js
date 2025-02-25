@@ -1,6 +1,7 @@
 class HomeController {
-  constructor() {
+  constructor(io) {
     this.__controllerName = "Home";
+    this.io = io;
   }
 
   /**

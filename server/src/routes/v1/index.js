@@ -1,11 +1,14 @@
-import { Router } from 'express';
+import { Router } from "express";
+import createHomeRouter from "./homeRoutes.js";
+import createAccountRouter from "./accountRoutes.js";
 
-import homeRouter from './homeRoutes.js';
-import accountRouter from './accountRoutes.js';
+import createBetRoutes from "./betRoutes.js";
 
-const v1 = new Router();
+export default function createV1Router(io) {
+  const v1 = new Router();
 
-v1.use('/account', accountRouter);
-v1.use('/', homeRouter);
+  v1.use("/account", createAccountRouter(io)); // ✅ Pass io
+  v1.use("/", createHomeRouter(io));
 
-export default v1;
+  return v1;
+}

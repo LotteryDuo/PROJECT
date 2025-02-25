@@ -1,13 +1,13 @@
 import { Router } from "express";
 
-import AccountController from "../../controllers/v1/accountController.js";
+import BetController from "../../controllers/v1/betController.js";
 import authorization from "../../middlewares/authorization.js";
 import authentication from "../../middlewares/authentication.js";
 
 export default function createAccountRouter(io) {
   // ✅ Accept io
-  const accountRouter = Router();
-  const account = new AccountController(io); // ✅ Pass io to controller
+  const betRouter = Router();
+  const bet = new BetController(io); // ✅ Pass io to controller
 
   // Ensure that all endpoints implement authorization
   accountRouter.use(authorization);
