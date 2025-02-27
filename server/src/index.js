@@ -43,23 +43,44 @@ io.on("connection", (socket) => {
 
   // ✅ Listen for "userConnected" and update global user list
   socket.on("userConnected", (userData) => {
-    if (!onlineUsers.find((user) => user.username === userData.username)) {
-      onlineUsers.push({ ...userData, socketId: socket.id });
+    const existingUser = onlineUsers.find(
+      (user) => user.username === userData.username
+    );
+
+    if (existingUser) {
+      console.log(`${userData.username} is already logged in.`);
+
+      // ✅ Force logout from all tabs
+      io.to(existingUser.socketId).emit("forceLogout");
+
+      onlineUsers = onlineUsers.filter(
+        (user) => user.username !== userData.username
+      );
     }
 
-    console.log("Online Users:", onlineUsers);
-
-    // ✅ Broadcast updated user list to all clients
+    onlineUsers.push({ ...userData, socketId: socket.id });
     io.emit("updateOnlineUsers", onlineUsers);
   });
 
-  // ✅ Handle user disconnect
-  socket.on("disconnect", () => {
-    onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
-    console.log("User disconnected:", socket.id);
-
-    // ✅ Send updated user list after disconnect
+  // ✅ Handle manual logout or tab close
+  socket.on("userDisconnected", (userData) => {
+    onlineUsers = onlineUsers.filter(
+      (user) => user.username !== userData.username
+    );
+    console.log(`${userData.username} manually disconnected.`);
     io.emit("updateOnlineUsers", onlineUsers);
+  });
+
+  // ✅ Handle automatic socket disconnect
+  socket.on("disconnect", () => {
+    const disconnectedUser = onlineUsers.find(
+      (user) => user.socketId === socket.id
+    );
+    if (disconnectedUser) {
+      onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+      console.log(`${disconnectedUser.username} has disconnected.`);
+      io.emit("updateOnlineUsers", onlineUsers);
+    }
   });
 });
 
