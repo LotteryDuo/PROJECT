@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Wallet, User, Star, CodeSquare } from "lucide-react";
+import { ChevronLeft, Wallet, User, Star, CodeSquare } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { io } from "socket.io-client";
+import ButtonWithSound from "./ButtonWithSound";
 
 const socket = io("http://localhost:3000");
 
@@ -9,7 +10,7 @@ const getToken = () => sessionStorage.getItem("token");
 const getUsername = () => sessionStorage.getItem("username");
 
 const DisplayBet = () => {
-  const [balance, setBalance] = useState(1000); // Mock balance
+  const [balance, setBalance] = useState(""); // Mock balance
   const [betAmount, setBetAmount] = useState("");
   const [bets, setBets] = useState([]);
   const [betResult, setBetResult] = useState(null);
@@ -72,13 +73,13 @@ const DisplayBet = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-6">
       {/* Back Button */}
-      <button
+      <ButtonWithSound
         onClick={() => navigator(-1)}
         className="flex items-center gap-2 text-white bg-gray-800 px-4 py-2 mb-4 rounded-lg hover:bg-gray-700 transition self-start"
       >
-        <ArrowLeft className="w-5 h-5" />
+        <ChevronLeft className="w-5 h-5" />
         <span>Back</span>
-      </button>
+      </ButtonWithSound>
 
       {/* User Info & Balance */}
       <div className="bg-gray-800 p-6 rounded-xl shadow-lg w-full max-w-md">
@@ -101,12 +102,12 @@ const DisplayBet = () => {
           placeholder="Enter amount (₱)"
           className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-blue-500"
         />
-        <button
+        <ButtonWithSound
           onClick={handleBet}
           className="mt-4 w-full py-2 bg-blue-600 hover:bg-blue-700 transition rounded-lg font-semibold"
         >
-          Bet Now
-        </button>
+          <div>Bet Now</div>
+        </ButtonWithSound>
       </div>
 
       {/* Bet Results */}

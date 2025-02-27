@@ -5,6 +5,7 @@ import Alert from "./Alert.jsx";
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import ButtonWithSound from "./ButtonWithSound.jsx";
 
 export default function displaySignIn(root) {
   const navigator = useNavigate();
@@ -107,7 +108,12 @@ export default function displaySignIn(root) {
 
         {/* Password Input */}
         <div className="mb-3 relative">
-          <Button text="Login" onClick={handleLogin} className="" />
+          <ButtonWithSound
+            onClick={handleLogin}
+            className="bg-blue-500 w-full hover:bg-blue-600"
+          >
+            Login
+          </ButtonWithSound>
         </div>
 
         {/* Button Container (Add buttons here dynamically) */}
